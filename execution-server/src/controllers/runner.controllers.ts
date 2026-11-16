@@ -7,9 +7,18 @@ export const testJavaRunner = async (
     res: Response
 ) => {
     try {
-        const { input } = req.body;
+        const { sourceCode, input } = req.body;
 
-        const result = await executeJava(input ?? "");
+        if (!sourceCode) {
+            return res.status(400).json({
+                message: "Java source code is required"
+            });
+        }
+
+        const result = await executeJava(
+            sourceCode,
+            input ?? ""
+        );
 
         return res.status(200).json({
             message: "Java execution completed",

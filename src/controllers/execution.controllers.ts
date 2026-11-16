@@ -1,3 +1,4 @@
+
 import { Request, Response } from "express";
 import { executeOnRunner } from "../services/executionClient.js";
 
@@ -6,9 +7,18 @@ export const testExecutionConnection = async (
     res: Response
 ) => {
     try {
-        const { input } = req.body;
+        const { sourceCode, input } = req.body;
 
-        const result = await executeOnRunner(input ?? "");
+        if (!sourceCode) {
+            return res.status(400).json({
+                message: "Java source code is required"
+            });
+        }
+
+        const result = await executeOnRunner(
+            sourceCode,
+            input ?? ""
+        );
 
         return res.status(200).json({
             message: "Main Backend successfully communicated with Execution Server",
