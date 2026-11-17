@@ -1,6 +1,20 @@
-node_modules/
-dist/
-.env
-.env.*
-!.env.example
-*.log
+# Node dependencies
+**/node_modules/
+
+# TypeScript build output
+**/dist/
+
+# Environment variables
+**/.env
+**/.env.*
+
+# Logs
+**/*.log
+
+# Generated Java files
+execution-server/runner-test/*.java
+execution-server/runner-test/*.class
+
+# OS files
+.DS_Store
+Thumbs.db
