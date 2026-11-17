@@ -13,12 +13,13 @@ export const testJavaRunner = async (req: Request, res: Response) => {
 
     const result = await executeJava(Number(userId), sourceCode, input ?? "");
 
-    return res.status(200).json({
-      message: "Java execution completed",
-      output: result.stdout,
-      error: result.stderr,
-      exitCode: result.exitCode,
-    });
+   return res.status(200).json({
+    message: "Java execution completed",
+    output: result.stdout,
+    error: result.stderr,
+    exitCode: result.exitCode,
+    status: result.status
+});
   } catch (error) {
     console.error("Java runner error:", error);
 

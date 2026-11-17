@@ -4,6 +4,11 @@ interface ExecutionResult {
     output: string;
     error: string;
     exitCode: number | null;
+     status:
+        | "SUCCESS"
+        | "COMPILATION_ERROR"
+        | "RUNTIME_ERROR"
+        | "TIME_LIMIT_EXCEEDED";
 }
 
 export const executeOnRunner = async (
