@@ -7,7 +7,7 @@ export const testExecutionConnection = async (
     res: Response
 ) => {
     try {
-        const { sourceCode, input } = req.body;
+const { userId, sourceCode, input } = req.body;
 
         if (!sourceCode) {
             return res.status(400).json({
@@ -15,10 +15,11 @@ export const testExecutionConnection = async (
             });
         }
 
-        const result = await executeOnRunner(
-            sourceCode,
-            input ?? ""
-        );
+      const result = await executeOnRunner(
+    Number(userId),
+    sourceCode,
+    input ?? ""
+);
 
         return res.status(200).json({
             message: "Main Backend successfully communicated with Execution Server",

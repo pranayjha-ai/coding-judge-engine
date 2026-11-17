@@ -1,35 +1,36 @@
 import { spawn } from "node:child_process";
 import path from "node:path";
-import os from "node:os";
 import { writeFile, mkdir } from "node:fs/promises";
-import { randomUUID } from "node:crypto";
+// import { randomUUID } from "node:crypto";
 type JavaExecutionResult = {
   stdout: string;
   stderr: string;
   exitCode: number | null;
 };
-
 export const executeJava = async (
+  userId: number,
   sourceCode: string,
   input: string,
 ): Promise<JavaExecutionResult> => {
   // 1. Set the project folder where Java files will be created
-const executionId = randomUUID();
+  //   const executionId = randomUUID();
 
-const workDir = path.resolve(
-    "execution-server",
-    "runner-test",
-    `execution-${executionId}`
-);
+  const workDir = path.resolve("execution-server", "runner-test");
   try {
     // 2. Create the folder if it doesn't exist
     await mkdir(workDir, { recursive: true });
 
     // 3. Create Main.java automatically
-    const javaFilePath = path.join(workDir, "Main.java");
+    const className = `User_${userId}`;
+    const fileName = `${className}.java`;
 
-    await writeFile(javaFilePath, sourceCode, "utf8");
+    const javaFilePath = path.join(workDir, fileName);
+    const updatedSourceCode = sourceCode.replace(
+      /\bpublic\s+class\s+Main\b/,
+      `public class ${className}`,
+    );
 
+    await writeFile(javaFilePath, updatedSourceCode, "utf8");
     console.log("Generated Java file:", javaFilePath);
     // 3. Prepare folder path for Docker
     const folderPath = workDir.replace(/\\/g, "/");
@@ -51,7 +52,7 @@ const workDir = path.resolve(
         "/app",
         "eclipse-temurin:21-jdk",
         "java",
-        "Main.java",
+        fileName,
       ]);
 
       let stdout = "";

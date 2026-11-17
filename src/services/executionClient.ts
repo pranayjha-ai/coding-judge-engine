@@ -7,6 +7,7 @@ interface ExecutionResult {
 }
 
 export const executeOnRunner = async (
+    userId: number,
     sourceCode: string,
     input: string
 ): Promise<ExecutionResult> => {
@@ -19,6 +20,7 @@ export const executeOnRunner = async (
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
+                userId,
                 sourceCode,
                 input
             })
@@ -31,7 +33,6 @@ export const executeOnRunner = async (
 
     return await response.json() as ExecutionResult;
 };
-
 
 // Main Backend calls executeOnRunner().
 
