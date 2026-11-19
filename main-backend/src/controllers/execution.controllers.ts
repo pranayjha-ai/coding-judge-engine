@@ -7,7 +7,13 @@ export const testExecutionConnection = async (
     res: Response
 ) => {
     try {
-const { userId, sourceCode, input } = req.body;
+        const { sourceCode, input } = req.body;
+
+        if (!req.user?.userId) {
+            return res.status(401).json({
+                message: "Authentication is required"
+            });
+        }
 
         if (!sourceCode) {
             return res.status(400).json({
@@ -16,7 +22,7 @@ const { userId, sourceCode, input } = req.body;
         }
 
       const result = await executeOnRunner(
-    Number(userId),
+    Number(req.user.userId),
     sourceCode,
     input ?? ""
 );

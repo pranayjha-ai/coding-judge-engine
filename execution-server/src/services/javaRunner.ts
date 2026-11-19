@@ -21,7 +21,7 @@ export const executeJava = async (
   // 1. Set the project folder where Java files will be created
   //   const executionId = randomUUID();
 
-  const workDir = path.resolve("execution-server", "runner-test");
+const workDir = path.resolve("runner-test");
   try {
     // 2. Create the folder if it doesn't exist
     await mkdir(workDir, { recursive: true });

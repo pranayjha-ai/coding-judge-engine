@@ -7,16 +7,16 @@ export const createSubmission = async (
     res: Response
 ) => {
     const {
-        user_id,
         problem_id,
         language,
         mode,
         source_code
     } = req.body ?? {};
+    const userId = req.user?.userId;
 
     // 1. Validate required fields
     if (
-        user_id === undefined ||
+        !userId ||
         problem_id === undefined ||
         !language ||
         !mode ||
@@ -31,9 +31,9 @@ export const createSubmission = async (
     const validId = (id: unknown) =>
         /^[1-9]\d*$/.test(String(id));
 
-    if (!validId(user_id) || !validId(problem_id)) {
+    if (!validId(userId) || !validId(problem_id)) {
         return res.status(400).json({
-            message: "Invalid user_id or problem_id"
+            message: "Invalid problem_id"
         });
     }
 
@@ -72,7 +72,7 @@ export const createSubmission = async (
         // 3. Check whether user exists
         const userResult = await client.query(
             "SELECT id FROM users WHERE id = $1",
-            [String(user_id)]
+            [userId]
         );
 
         if (userResult.rows.length === 0) {
@@ -104,7 +104,7 @@ export const createSubmission = async (
              RETURNING id, user_id, problem_id,
                        language, mode, status, created_at`,
             [
-                String(user_id),
+                userId,
                 String(problem_id),
                 language,
                 source_code,
@@ -151,16 +151,16 @@ export const getSubmission = async (
 ) => {
     try {
         const submissionId = String(req.params.id);
-        const userId = req.query.user_id;
+        const userId = req.user?.userId;
 
         // Validate IDs
         if (
             !/^[1-9]\d*$/.test(submissionId) ||
-            typeof userId !== "string" ||
+            !userId ||
             !/^[1-9]\d*$/.test(userId)
         ) {
             return res.status(400).json({
-                message: "Valid submission ID and user_id are required"
+                message: "Valid submission ID is required"
             });
         }
 

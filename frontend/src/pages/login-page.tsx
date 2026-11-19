@@ -1,0 +1,108 @@
+
+import { useState, type FormEvent } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { ArrowRight, LockKeyhole, Mail } from "lucide-react"
+import { AuthCard } from "@/components/auth-card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+
+export function LoginPage() {
+  const navigate = useNavigate()
+
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [notice, setNotice] = useState("")
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setNotice("")
+    setLoading(true)
+
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || "Sign in failed.")
+      }
+
+      localStorage.setItem("token", data.token)
+      navigate("/problems")
+    } catch (error) {
+      setNotice(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again."
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <AuthCard
+      eyebrow="Welcome back"
+      title="Sign in to Coding Judge"
+      description="Sign in to continue solving problems."
+      footer={
+        <>
+          New here?{" "}
+          <Link to="/signup" className="font-medium underline">
+            Create an account
+          </Link>
+        </>
+      }
+    >
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        <label className="block space-y-2 text-sm font-medium">
+          Email
+          <span className="relative block">
+            <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="you@example.com"
+              className="h-10 pl-10"
+              required
+            />
+          </span>
+        </label>
+
+        <label className="block space-y-2 text-sm font-medium">
+          Password
+          <span className="relative block">
+            <LockKeyhole className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Enter your password"
+              className="h-10 pl-10"
+              required
+            />
+          </span>
+        </label>
+
+        {notice && (
+          <p className="text-sm text-destructive" role="alert">
+            {notice}
+          </p>
+        )}
+
+        <Button type="submit" className="h-10 w-full" disabled={loading}>
+          {loading ? "Signing in..." : "Sign in"}
+          {!loading && <ArrowRight data-icon="inline-end" />}
+        </Button>
+      </form>
+    </AuthCard>
+  )
+}
